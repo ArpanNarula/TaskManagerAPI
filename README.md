@@ -48,7 +48,7 @@ TaskManagerAPI/
 ## Prerequisites
 
 - [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8)
-- SQL Server (local, Docker, or Azure SQL)
+- PostgreSQL (local Docker, Supabase, Neon, or any managed Postgres)
 - (Optional) Visual Studio 2022 / VS Code with C# extension
 
 ---
@@ -58,7 +58,7 @@ TaskManagerAPI/
 ### 1. Clone and restore
 
 ```bash
-git clone https://github.com/your-org/TaskManagerAPI.git
+git clone https://github.com/ArpanNarula/TaskManagerAPI.git
 cd TaskManagerAPI
 dotnet restore
 ```
@@ -70,19 +70,22 @@ Edit `TaskManagerAPI.API/appsettings.Development.json`:
 ```json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Server=YOUR_SERVER;Database=TaskManagerDB;Trusted_Connection=True;TrustServerCertificate=True;"
+    "DefaultConnection": "Host=localhost;Port=5432;Database=taskmanagerdb_dev;Username=postgres;Password=postgres"
   }
 }
 ```
 
-**Docker SQL Server (quickest local setup):**
+**Docker Postgres (quickest local setup):**
 
 ```bash
-docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=YourStrong@Password" \
-  -p 1433:1433 --name sqlserver -d mcr.microsoft.com/mssql/server:2022-latest
+docker run --name taskmanager-postgres \
+  -e POSTGRES_PASSWORD=postgres \
+  -e POSTGRES_DB=taskmanagerdb_dev \
+  -p 5432:5432 \
+  -d postgres:16
 ```
 
-Then use: `Server=localhost,1433;Database=TaskManagerDB;User Id=sa;Password=YourStrong@Password;TrustServerCertificate=True;`
+For Supabase, use the pooled Postgres connection string and set it as `ConnectionStrings__DefaultConnection` in your host environment. Supabase connections usually require SSL, for example: `Host=...;Port=5432;Database=postgres;Username=...;Password=...;SSL Mode=Require;Trust Server Certificate=true`.
 
 ### 3. Set JWT secret
 
@@ -122,6 +125,28 @@ dotnet run --project TaskManagerAPI.API
 ```
 
 Swagger UI: `https://localhost:7000/swagger` (port may differ — check console output)
+
+---
+
+## Deploy on Render + Supabase
+
+This repo includes a `Dockerfile`, `.dockerignore`, and `render.yaml` for Render.
+
+1. Create a Supabase project and copy the Postgres connection string.
+2. In Render, create a new Web Service from this GitHub repo.
+3. Choose Docker as the runtime. Render will use the root `Dockerfile`.
+4. Set these environment variables in Render:
+
+```bash
+ASPNETCORE_ENVIRONMENT=Production
+ConnectionStrings__DefaultConnection="Host=...;Port=5432;Database=postgres;Username=...;Password=...;SSL Mode=Require;Trust Server Certificate=true"
+JwtSettings__Secret="your-minimum-32-character-production-secret"
+JwtSettings__Issuer="TaskManagerAPI"
+JwtSettings__Audience="TaskManagerAPIUsers"
+JwtSettings__ExpiryMinutes="60"
+```
+
+The app exposes `/health` for Render health checks. Free Render web services spin down after idle time, so the first request after inactivity can be slow.
 
 ---
 

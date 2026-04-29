@@ -20,12 +20,12 @@ public static class ServiceExtensions
         this IServiceCollection services, IConfiguration config)
     {
         services.AddDbContext<AppDbContext>(options =>
-            options.UseSqlServer(
+            options.UseNpgsql(
                 config.GetConnectionString("DefaultConnection"),
-                sql => sql.EnableRetryOnFailure(
+                npgsql => npgsql.EnableRetryOnFailure(
                     maxRetryCount:      3,
                     maxRetryDelay:      TimeSpan.FromSeconds(10),
-                    errorNumbersToAdd:  null)));
+                    errorCodesToAdd:    null)));
 
         return services;
     }

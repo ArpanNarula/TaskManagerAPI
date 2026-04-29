@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TaskManagerAPI.Infrastructure.Data;
 
 #nullable disable
@@ -18,18 +19,18 @@ partial class AppDbContextModelSnapshot : ModelSnapshot
 #pragma warning disable 612, 618
         modelBuilder
             .HasAnnotation("ProductVersion", "8.0.4")
-            .HasAnnotation("Relational:MaxIdentifierLength", 128);
+            .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-        SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+        NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
         modelBuilder.Entity("TaskManagerAPI.Core.Entities.ApplicationUser", b =>
         {
-            b.Property<string>("Id").HasColumnType("nvarchar(450)");
-            b.Property<DateTime>("CreatedAt").HasColumnType("datetime2");
-            b.Property<string>("Email").IsRequired().HasMaxLength(256).HasColumnType("nvarchar(256)");
-            b.Property<string>("PasswordHash").IsRequired().HasColumnType("nvarchar(max)");
-            b.Property<string>("Role").IsRequired().HasMaxLength(20).HasDefaultValue("User").HasColumnType("nvarchar(20)");
-            b.Property<string>("UserName").IsRequired().HasMaxLength(50).HasColumnType("nvarchar(50)");
+            b.Property<string>("Id").HasColumnType("text");
+            b.Property<DateTime>("CreatedAt").HasColumnType("timestamp with time zone");
+            b.Property<string>("Email").IsRequired().HasMaxLength(256).HasColumnType("character varying(256)");
+            b.Property<string>("PasswordHash").IsRequired().HasColumnType("text");
+            b.Property<string>("Role").IsRequired().HasMaxLength(20).HasDefaultValue("User").HasColumnType("character varying(20)");
+            b.Property<string>("UserName").IsRequired().HasMaxLength(50).HasColumnType("character varying(50)");
             b.HasKey("Id");
             b.HasIndex("Email").IsUnique();
             b.HasIndex("UserName").IsUnique();
@@ -38,15 +39,15 @@ partial class AppDbContextModelSnapshot : ModelSnapshot
 
         modelBuilder.Entity("TaskManagerAPI.Core.Entities.TaskItem", b =>
         {
-            b.Property<int>("Id").ValueGeneratedOnAdd().HasColumnType("int");
-            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-            b.Property<DateTime>("CreatedAt").HasColumnType("datetime2");
-            b.Property<string>("Description").HasMaxLength(2000).HasColumnType("nvarchar(2000)");
-            b.Property<string>("Priority").IsRequired().HasMaxLength(20).HasDefaultValue("Medium").HasColumnType("nvarchar(20)");
-            b.Property<string>("Status").IsRequired().HasMaxLength(20).HasDefaultValue("Pending").HasColumnType("nvarchar(20)");
-            b.Property<string>("Title").IsRequired().HasMaxLength(200).HasColumnType("nvarchar(200)");
-            b.Property<DateTime>("UpdatedAt").HasColumnType("datetime2");
-            b.Property<string>("UserId").IsRequired().HasColumnType("nvarchar(450)");
+            b.Property<int>("Id").ValueGeneratedOnAdd().HasColumnType("integer");
+            NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+            b.Property<DateTime>("CreatedAt").HasColumnType("timestamp with time zone");
+            b.Property<string>("Description").HasMaxLength(2000).HasColumnType("character varying(2000)");
+            b.Property<string>("Priority").IsRequired().HasMaxLength(20).HasDefaultValue("Medium").HasColumnType("character varying(20)");
+            b.Property<string>("Status").IsRequired().HasMaxLength(20).HasDefaultValue("Pending").HasColumnType("character varying(20)");
+            b.Property<string>("Title").IsRequired().HasMaxLength(200).HasColumnType("character varying(200)");
+            b.Property<DateTime>("UpdatedAt").HasColumnType("timestamp with time zone");
+            b.Property<string>("UserId").IsRequired().HasColumnType("text");
             b.HasKey("Id");
             b.HasIndex("Priority");
             b.HasIndex("Status");
