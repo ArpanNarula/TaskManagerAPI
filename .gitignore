@@ -1,0 +1,22 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+*.vs/
+.vs/
+
+## User secrets
+secrets.json
+appsettings.*.local.json
+
+## EF Core design-time output (not needed in source control)
+# Migrations are committed; snapshots regenerate from them
+
+## IDE
+.idea/
+.vscode/settings.json
+*.DS_Store
+
+## Publish output
+publish/
