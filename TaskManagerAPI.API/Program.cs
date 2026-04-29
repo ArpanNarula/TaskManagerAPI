@@ -35,16 +35,26 @@ using (var scope = app.Services.CreateScope())
 
 app.UseMiddleware<ExceptionMiddleware>(); // Must be first to catch all exceptions
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TaskManager API v1"));
-}
+app.UseSwagger();
+app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TaskManager API v1"));
 
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
 app.UseAuthentication(); // Must come before UseAuthorization
 app.UseAuthorization();
+app.MapGet("/", () => Results.Ok(new
+{
+    success = true,
+    message = "TaskManager API is running",
+    data = new
+    {
+        health = "/health",
+        swagger = "/swagger",
+        auth = "/api/auth",
+        tasks = "/api/tasks"
+    },
+    errors = Array.Empty<string>()
+}));
 app.MapHealthChecks("/health");
 app.MapControllers();
 
